@@ -2,6 +2,8 @@ node_modules/
 dist/
 .vscode/
 .claude/
+src/
+assets/
 
 # OS/editor noise
 .DS_Store
