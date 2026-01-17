@@ -1,0 +1,53 @@
+{
+  "metadata": {
+    "name": "Equipment Export",
+    "version": "1.0.0",
+    "description": "Export equipment data to JSON and CSV formats"
+  },
+  "tables": [
+    {
+      "name": "Equipment",
+      "columnMap": {
+        "Equipment Tag": "tag",
+        "Description": "description",
+        "Status": "status"
+      },
+      "valueMappings": [
+        {
+          "column": "status",
+          "outputField": "statusCode",
+          "map": {
+            "Active": 1,
+            "Inactive": 0,
+            "Maintenance": 2
+          },
+          "default": -1
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "ProjectName",
+      "type": "string",
+      "defaultValue": "Unnamed Project"
+    },
+    {
+      "name": "ExportDate",
+      "type": "date",
+      "defaultValue": null
+    }
+  ],
+  "outputs": {
+    "json": {
+      "filename": "{{ globals.ProjectName }}_equipment.json",
+      "description": "Equipment list in JSON format",
+      "template": "{\n  \"project\": \"{{ globals.ProjectName }}\",\n  \"exportDate\": \"{{ globals.ExportDate | date('YYYY-MM-DD') }}\",\n  \"equipment\": [\n    {%- for item in data.Equipment %}\n    {\n      \"tag\": \"{{ item.tag }}\",\n      \"description\": \"{{ item.description | xmlEscape }}\",\n      \"status\": \"{{ item.status }}\",\n      \"statusCode\": {{ item.statusCode }}\n    }{{ ',' if not loop.last }}\n    {%- endfor %}\n  ]\n}"
+    },
+    "csv": {
+      "filename": "{{ globals.ProjectName }}_equipment.csv",
+      "description": "Equipment list in CSV format",
+      "template": "Tag,Description,Status,Status Code\n{%- for item in data.Equipment %}\n{{ item.tag | csvEscape }},{{ item.description | csvEscape }},{{ item.status | csvEscape }},{{ item.statusCode }}\n{%- endfor %}"
+    }
+  }
+}
